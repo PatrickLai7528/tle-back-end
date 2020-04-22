@@ -9,8 +9,8 @@ export default app => {
          email: { type: String, required: true, unique: true },
          password: { type: String, required: true },
          githubId: { type: String, default: null },
-         createAt: { type: Date, default: Date.now() },
-         lastUpdateAt: { type: Date, default: Date.now() },
+         createAt: { type: Number, default: Date.now() },
+         lastUpdateAt: { type: Number, default: Date.now() },
       },
       {
          timestamps: {

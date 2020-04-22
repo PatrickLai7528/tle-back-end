@@ -14,8 +14,8 @@ export default app => {
             lastUpdateAt: { type: Date, default: Date.now() }
          }
       ],
-      lastUpdateAt: { type: Schema.Types.Date, default: Date.now() },
-      createAt: { type: Schema.Types.Date, default: Date.now() }
+      lastUpdateAt: { type: Number, default: Date.now() },
+      createAt: { type: Number, default: Date.now() }
    }, {
       timestamps: { createAt: "createAt", updateAt: "lastUpdateAt" }
    });

@@ -44,8 +44,11 @@ export default app => {
       ],
       language: { type: Schema.Types.String },
       description: { type: Schema.Types.String },
-      lastUpdateAt: { type: Schema.Types.Number },
+      lastUpdateAt: { type: Number, default: Date.now() },
       shaFileContentMap: { type: Schema.Types.Mixed },
+      createAt: { type: Number, default: Date.now() }
+   }, {
+      timestampes: { createAt: "createAt", updateAt: "lastUpdateAt" }
    });
 
    return mongoose.model('Repository', RepositorySchema, 'Repository');
