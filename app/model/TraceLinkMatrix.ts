@@ -42,6 +42,8 @@ export default app => {
       ],
       createAt: { type: Schema.Types.Date, default: Date.now() },
       lastUpdateAt: { type: Schema.Types.Date, default: Date.now() },
+   }, {
+      timestamps: { createAt: "createAt", updateAt: "lastUpdateAt" }
    });
 
    return mongoose.model('TraceLinkMatrix', TraceLinkMatrixSchema, 'TraceLinkMatrix');
