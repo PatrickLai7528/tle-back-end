@@ -1,0 +1,213 @@
+[
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/user",
+    "regexp": "/^\\/api\\/user(?:\\/(?=$))?$/",
+    "stack": [
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/auth/login",
+    "regexp": "/^\\/api\\/auth\\/login(?:\\/(?=$))?$/",
+    "stack": [
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/auth/registry",
+    "regexp": "/^\\/api\\/auth\\/registry(?:\\/(?=$))?$/",
+    "stack": [
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/auth/access_token",
+    "regexp": "/^\\/api\\/auth\\/access_token(?:\\/(?=$))?$/",
+    "stack": [
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/repository",
+    "regexp": "/^\\/api\\/repository(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/repository",
+    "regexp": "/^\\/api\\/repository(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/repository/recent",
+    "regexp": "/^\\/api\\/repository\\/recent(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [
+      {
+        "name": "id",
+        "prefix": "/",
+        "delimiter": "/",
+        "optional": false,
+        "repeat": false,
+        "partial": false,
+        "asterisk": false,
+        "pattern": "[^\\/]+?"
+      }
+    ],
+    "path": "/api/repository/id/:id",
+    "regexp": "/^\\/api\\/repository\\/id\\/((?:[^\\/]+?))(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/repository/if_imported",
+    "regexp": "/^\\/api\\/repository\\/if_imported(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/tracelink/init",
+    "regexp": "/^\\/api\\/tracelink\\/init(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/tracelink",
+    "regexp": "/^\\/api\\/tracelink(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/tracelink",
+    "regexp": "/^\\/api\\/tracelink(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/tracelink/history",
+    "regexp": "/^\\/api\\/tracelink\\/history(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "POST"
+    ],
+    "paramNames": [],
+    "path": "/api/requirement",
+    "regexp": "/^\\/api\\/requirement(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  },
+  {
+    "name": null,
+    "methods": [
+      "HEAD",
+      "GET"
+    ],
+    "paramNames": [],
+    "path": "/api/requirement",
+    "regexp": "/^\\/api\\/requirement(?:\\/(?=$))?$/",
+    "stack": [
+      "passportAuthenticate",
+      "wrappedController"
+    ]
+  }
+]
