@@ -70,22 +70,22 @@ export default class TraceLinkService extends Service {
       return relatedLinks;
    }
 
-   public async init(files: IFileTreeNode[], requirement: IRequirement, githubId: string): Promise<ITraceLinkMatrix> {
+   public async init(files: IFileTreeNode[], requirement: IRequirement, githubId: string): Promise<Omit<ITraceLinkMatrix, "_id">> {
       const flattenFileTrees = flatten(files).filter(file => file.type === "FILE");
       return {
-         _id: uuidv4(),
          relatedRepoOwnerId: githubId,
          relatedRepoName: "TEMP NAME",
          links: traceLinkMocks.slice(1, 10).map(link => {
+            const { _id, ...others } = link;
             return {
-               ...link,
+               ...others,
                implement: {
                   ...link.implement,
                   fullyQualifiedName: flattenFileTrees[Math.round(Math.random() * (flattenFileTrees.length - 1))].fullyQuilaifiedName
                },
                requirementDescription: requirement.descriptions[0]
             }
-         })
+         }) as any
       }
    }
 

@@ -45,7 +45,7 @@ export default app => {
                   status: { type: String },
                   additions: { type: Number },
                   deletions: { type: Number },
-                  path: { type: String },
+                  patch: { type: String },
                   rawContent: { type: String }
                }
             ]

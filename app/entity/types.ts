@@ -15,7 +15,7 @@ export interface IImplement {
 }
 
 export interface ITraceLink {
-   id: string;
+   _id: string;
    requirementDescription: IRequirementDescription;
    implement: IImplement;
    lastUpdateAt?: number;
