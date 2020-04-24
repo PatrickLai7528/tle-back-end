@@ -3,7 +3,6 @@ export default app => {
    const Schema = mongoose.Schema;
 
    const TreeNodeSchema = new Schema({
-      _id: { type: Schema.Types.ObjectId, auto: true },
       sha: { type: String },
       path: { type: String },
       fullyQuailafiedName: { type: String },
@@ -13,24 +12,34 @@ export default app => {
    TreeNodeSchema.add({ subTrees: [TreeNodeSchema] })
 
    const RepositorySchema = new Schema({
-      _id: { type: Schema.Types.ObjectId, auto: true },
       name: { type: Schema.Types.String, required: true },
       ownerId: { type: Schema.Types.String },
       currentBranch: { type: Schema.Types.String },
       branches: [
          {
-            _id: { type: Schema.Types.ObjectId, auto: true },
             name: { type: String, required: true },
          }
       ],
       trees: [TreeNodeSchema],
       commits: [
          {
-            _id: { type: Schema.Types.ObjectId, auto: true },
+            message: { type: String },
+            committer: { id: { type: String } },
+            committedAt: { type: Number },
+            author: { id: { type: String } },
+            parents: {
+               sha: {
+                  type: String
+               }
+            },
+            stats: {
+               total: { type: Number },
+               additions: { type: Number },
+               deletions: { type: Number }
+            },
             sha: { type: String },
             changedFiles: [
                {
-                  _id: { type: Schema.Types.Objected, auto: true },
                   sha: { type: String },
                   filename: { type: String },
                   status: { type: String },

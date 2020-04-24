@@ -1,6 +1,6 @@
-import { requirementDescriptionMocks } from './RequirementDescription';
 import { implementMocks } from "./Implements";
 import { ITraceLink } from '../entity/types';
+import { requirementDescriptionMocks } from './RequirementDescription';
 
 const randomIndex = () => {
    return Math.round(Math.random() * implementMocks.length);

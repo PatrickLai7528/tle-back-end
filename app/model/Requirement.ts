@@ -8,10 +8,20 @@ export default app => {
       relatedRepoName: { type: Schema.Types.String, required: true },
       descriptions: [
          {
-            _id: { type: Schema.Types.ObjectId, auto: true },
-            text: { type: String, required: true },
+            name: { type: String, required: true },
             traced: { type: Boolean, default: false },
-            lastUpdateAt: { type: Date, default: Date.now() }
+            lastUpdateAt: { type: Number, default: Date.now() },
+            createBy: { type: String },
+            createAt: { type: Number, default: Date.now() },
+            lastUpdateBy: { type: String },
+            participants: { type: String },
+            triggeringCondition: { type: String },
+            preCondition: { type: String },
+            postCondition: { type: String },
+            priority: { type: String },
+            normalProcess: { type: String },
+            expansionProcess: { type: String },
+            specialNeeds: { type: String }
          }
       ],
       lastUpdateAt: { type: Number, default: Date.now() },

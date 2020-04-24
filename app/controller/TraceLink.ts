@@ -1,7 +1,8 @@
 import { extractToken } from './../utils/Token';
 import { Controller } from "egg";
 import { OK } from 'http-status-codes';
-import { ITraceLink, ITraceLinkHistory } from './../entity/types';
+import { ITraceLink } from './../entity/types';
+import { ITraceLinkHistory } from '../entity/ServerOnly';
 
 export default class TraceLinkController extends Controller {
 
@@ -9,8 +10,9 @@ export default class TraceLinkController extends Controller {
       const { ctx } = this;
       const requirememt = ctx.request.body.requirement;
       const files = ctx.request.body.files;
+      const { githubId } = extractToken(ctx, this.config);
 
-      const matrix = await ctx.service.traceLink.init(files, requirememt);
+      const matrix = await ctx.service.traceLink.init(files, requirememt, githubId);
 
       ctx.body = { success: true, payload: matrix }
       ctx.status = OK

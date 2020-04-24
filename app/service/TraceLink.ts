@@ -1,8 +1,9 @@
 import { Service } from "egg";
 import { flatten } from '../utils/Tree';
-import { IFileTreeNode, IRequirement, ITraceLink, ITraceLinkHistory, ITraceLinkMatrix } from './../entity/types';
+import { IFileTreeNode, IRequirement, ITraceLink, ITraceLinkMatrix } from './../entity/types';
 import { traceLinkMocks } from "./../mock/TraceLinks";
 import { v4 as uuidv4 } from "uuid";
+import { ITraceLinkHistory } from '../entity/ServerOnly';
 
 export default class TraceLinkService extends Service {
 
@@ -69,9 +70,11 @@ export default class TraceLinkService extends Service {
       return relatedLinks;
    }
 
-   public async init(files: IFileTreeNode[], requirement: IRequirement): Promise<ITraceLinkMatrix> {
+   public async init(files: IFileTreeNode[], requirement: IRequirement, githubId: string): Promise<ITraceLinkMatrix> {
       const flattenFileTrees = flatten(files).filter(file => file.type === "FILE");
       return {
+         _id: uuidv4(),
+         relatedRepoOwnerId: githubId,
          relatedRepoName: "TEMP NAME",
          links: traceLinkMocks.slice(1, 10).map(link => {
             return {

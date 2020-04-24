@@ -1,14 +1,7 @@
-
-export interface ITraceLinkHistory {
-   _id: string;
-   commit: ICommit,
-   added: { traceLinks: ITraceLink[] },
-   removed: { traceLinks: ITraceLink[] }
-}
-
-export type ProgramLanguage = string;
+import { ProgramLanguage } from './ServerOnly';
 
 export interface IUserActivity {
+   _id: string;
    avatarUrl: string;
    title: string;
    description: string;
@@ -18,7 +11,7 @@ export interface IImplement {
    id: string;
    type: "METHOD" | "CLASS";
    fullyQualifiedName: string;
-   traced: boolean;
+   traced?: boolean;
 }
 
 export interface ITraceLink {
@@ -29,20 +22,33 @@ export interface ITraceLink {
 }
 
 export interface ITraceLinkMatrix {
-   relatedRepoName: string;
-   relatedRepoOwnerId?: string;
+   _id: string;
    links: ITraceLink[];
+   relatedRepoOwnerId?: string;
+   relatedRepoName: string;
 }
 
 export interface IRequirementDescription {
-   text: string;
-   traced: boolean;
+   traced?: boolean;
    lastUpdateAt: number;
+   name: string;
+   createBy: string;
+   lastUpdateBy: string;
+   createAt: number;
+   participants: string;
+   triggeringCondition: string;
+   preCondition: string;
+   postCondition: string;
+   priority: string;
+   normalProcess: string;
+   expansionProcess: string;
+   specialNeeds: string;
    id: string;
 }
 
 export interface IRequirement {
-   relatedRepoOwnerId?: string
+   _id: string;
+   relatedRepoOwnerId?: string;
    descriptions: IRequirementDescription[];
    relatedRepoName: string;
 }
@@ -69,7 +75,7 @@ export interface ICommitChanges {
 }
 
 export interface IRecentRepo {
-   id: string;
+   _id: string;
    name: string;
    language: ProgramLanguage;
    lastUpdateBy: string;
@@ -93,9 +99,7 @@ export interface ICommit {
 export type ShaFileContentMap = { [key: string]: string };
 
 export interface IImportedRepository {
-
    _id: string;
-
    // 倉庫名稱
    name: string;
 

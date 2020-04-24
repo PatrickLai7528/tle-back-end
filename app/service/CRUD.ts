@@ -6,7 +6,8 @@ import { Service } from 'egg';
 export default class CRUD extends Service {
 
    public async create<T>(t: T, model: any): Promise<void> {
-      return model.create({ ...t })
+      const { _id, ...others } = t as any;
+      return model.create({ ...others })
    }
 
    public async read<T>(t: Partial<T>, model: any): Promise<T[]> {

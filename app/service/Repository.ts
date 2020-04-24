@@ -58,7 +58,7 @@ export default class RepositoryService extends Service {
       return (repos || []).map(repo => {
          return {
             name: repo.name,
-            id: repo._id.toString(),
+            _id: repo._id.toString(),
             language: repo.language,
             lastUpdateAt: repo.lastUpdateAt || Date.now(),
             lastUpdateBy: repo.commits[0].author?.id || "unknown",
