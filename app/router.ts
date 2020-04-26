@@ -1,9 +1,12 @@
-import { Application } from 'egg';
+import { Application } from "egg";
 
 export default (app: Application) => {
   const { controller, router } = app;
 
-  const jwt = (app as any).passport.authenticate('jwt', { session: false, successReturnToOrRedirect: null });
+  const jwt = (app as any).passport.authenticate("jwt", {
+    session: false,
+    successReturnToOrRedirect: null,
+  });
 
   router.get("/api/user", controller.user.index);
   router.post("/api/auth/login", controller.user.login);
@@ -12,12 +15,23 @@ export default (app: Application) => {
 
   router.get("/api/repository", jwt, controller.repository.index);
   router.post("/api/repository", jwt, controller.repository.create);
-  router.get("/api/repository/recent", jwt, controller.repository.getRecentRepo);
+  router.get(
+    "/api/repository/recent",
+    jwt,
+    controller.repository.getRecentRepo
+  );
   router.get("/api/repository/id/:id", jwt, controller.repository.show);
-  router.get("/api/repository/if_imported", jwt, controller.repository.isRepoImported);
+  router.get(
+    "/api/repository/if_imported",
+    jwt,
+    controller.repository.isRepoImported
+  );
 
-
-  router.post("/api/tracelink/init", jwt, controller.traceLink.initRepoTraceLink);
+  router.post(
+    "/api/tracelink/init",
+    jwt,
+    controller.traceLink.initRepoTraceLink
+  );
   router.post("/api/tracelink", jwt, controller.traceLink.create);
   router.get("/api/tracelink", jwt, controller.traceLink.query);
 
@@ -25,6 +39,14 @@ export default (app: Application) => {
 
   router.post("/api/requirement", jwt, controller.requirement.create);
   router.get("/api/requirement", jwt, controller.requirement.query);
-  router.delete("/api/requirement/description/:requirementId/:descriptionId", jwt, controller.requirement.deleteDescription);
-
+  router.delete(
+    "/api/requirement/description/:requirementId/:descriptionId",
+    jwt,
+    controller.requirement.deleteDescription
+  );
+  router.post(
+    "/api/requirement/description/:requirementId",
+    jwt,
+    controller.requirement.addDescription
+  );
 };
