@@ -69,12 +69,18 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    // await this.getCRUD().delete(requirement, this.getModel());
+    console.log(requirement.descriptions);
+
+    const newDescriptions: IRequirementDescription[] = [];
+    for (const description of requirement.descriptions) {
+      if (description._id.toString() !== descriptionId) {
+        newDescriptions.push({ ...description });
+      }
+    }
+
     const newRequirement: IRequirement = {
       ...requirement,
-      descriptions: requirement.descriptions.filter(
-        ({ _id }) => _id === descriptionId
-      ),
+      descriptions: newDescriptions,
     };
 
     await this.getCRUD().update(requirement, newRequirement, this.getModel());
