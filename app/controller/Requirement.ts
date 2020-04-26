@@ -61,4 +61,17 @@ export default class RequirementController extends Controller {
 
     this.ctx.body = { success: true, payload: newRequirement };
   }
+
+  public async updateDescription() {
+    const { requirementId } = this.ctx.params;
+    const { githubId } = extractToken(this.ctx, this.config);
+    const newDescription = this.ctx.request.body;
+
+    const newRequirement: IRequirement = await this.ctx.service.requirement.updateDescription(
+      githubId,
+      requirementId,
+      newDescription
+    );
+    this.ctx.body = { success: true, payload: newRequirement };
+  }
 }

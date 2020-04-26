@@ -49,4 +49,9 @@ export default (app: Application) => {
     jwt,
     controller.requirement.addDescription
   );
+  router.put(
+    "/api/requirement/description/:requirementId/",
+    jwt,
+    controller.requirement.updateDescription
+  );
 };

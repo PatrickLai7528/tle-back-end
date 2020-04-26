@@ -109,4 +109,37 @@ export default class RequirementService extends Service {
     await this.getCRUD().update(requirement, newRequirement, this.getModel());
     return newRequirement;
   }
+
+  public async updateDescription(
+    ownerId: string,
+    requirementId: string,
+    description: IRequirementDescription
+  ): Promise<IRequirement> {
+    const requirement: IRequirement | null = await this.findById(requirementId);
+    if (!requirement) throw new Error("No Requirement Found");
+
+    if (
+      !requirement.relatedRepoOwnerId ||
+      requirement.relatedRepoOwnerId !== ownerId
+    )
+      throw new Error("This Only Allow Operated By Owner");
+
+    const newDescriptions: IRequirementDescription[] = [];
+    for (const oldDescription of requirement.descriptions || []) {
+      if (description._id.toString() === oldDescription._id.toString()) {
+        newDescriptions.push({ ...oldDescription, ...description });
+      } else {
+        newDescriptions.push(oldDescription);
+      }
+    }
+
+    const newRequirement: IRequirement = {
+      ...requirement,
+      descriptions: newDescriptions,
+    };
+
+    await this.getCRUD().update(requirement, newRequirement, this.getModel());
+
+    return (await this.findById(requirementId)) as IRequirement;
+  }
 }
