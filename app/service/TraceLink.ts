@@ -66,7 +66,6 @@ export default class TraceLinkService extends Service {
          } else return false;
       });
 
-      console.log(relatedLinks);
       return relatedLinks;
    }
 

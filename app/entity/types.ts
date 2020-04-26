@@ -43,7 +43,7 @@ export interface IRequirementDescription {
    normalProcess: string;
    expansionProcess: string;
    specialNeeds: string;
-   id: string;
+   _id: string;
 }
 
 export interface IRequirement {

@@ -25,5 +25,6 @@ export default (app: Application) => {
 
   router.post("/api/requirement", jwt, controller.requirement.create);
   router.get("/api/requirement", jwt, controller.requirement.query);
+  router.delete("/api/requirement/description/:requirementId/:descriptionId", jwt, controller.requirement.deleteDescription);
 
 };

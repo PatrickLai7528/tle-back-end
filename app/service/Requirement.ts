@@ -20,8 +20,40 @@ export default class RequirementService extends Service {
       return res;
    }
 
+   public async findById(id: string): Promise<IRequirement | null> {
+      const res = (await this.find({ _id: id }))[0];
+      return res;
+   }
+
    public async findByRepoName(ownerId: string, repoName: string): Promise<IRequirement> {
       return (await this.find({ relatedRepoOwnerId: ownerId, relatedRepoName: repoName }))[0];
    }
 
+   public async delete(ownerId: string, requirementId: string): Promise<void> {
+      const requirement: IRequirement | null = await this.findById(requirementId);
+      if (!requirement) throw new Error("No Requirement Found");
+
+      if (!requirement.relatedRepoOwnerId || requirement.relatedRepoOwnerId !== ownerId)
+         throw new Error("This Only Allow Operated By Owner");
+
+      await this.getCRUD().delete(requirement, this.getModel());
+   }
+
+   public async deleteDescription(ownerId: string, requirementId, descriptionId: string): Promise<IRequirement> {
+      const requirement: IRequirement | null = await this.findById(requirementId);
+
+      if (!requirement) throw new Error("No Requirement Found");
+
+      if (!requirement.relatedRepoOwnerId || requirement.relatedRepoOwnerId !== ownerId)
+         throw new Error("This Only Allow Operated By Owner");
+
+      // await this.getCRUD().delete(requirement, this.getModel());
+      const newRequirement: IRequirement = {
+         ...requirement,
+         descriptions: requirement.descriptions.filter(({ _id }) => _id === descriptionId)
+      }
+
+      await this.getCRUD().update(requirement, newRequirement, this.getModel());
+      return newRequirement;
+   }
 }

@@ -16,15 +16,15 @@ export default class CRUD extends Service {
             if (err) {
                reject(err);
             }
-            resolve(res);
+            resolve(res.map(i => i.toObject()));
          });
       });
    }
 
    public async update<T>(target: T, obj: any, model?: any): Promise<void> {
       return new Promise<void>((resolve, reject) => {
-         const { id, ...others } = obj;
-         model.update(target, others, err => {
+         // const { _id, ...others } = obj;
+         model.update(target, obj, err => {
             if (err) {
                reject(err);
             }
