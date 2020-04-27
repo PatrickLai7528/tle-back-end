@@ -59,4 +59,9 @@ export default (app: Application) => {
     jwt,
     controller.requirement.updateDescription
   );
+  router.get(
+    "/api/requirement/history",
+    jwt,
+    controller.requirement.getDescriptionHistory
+  );
 };

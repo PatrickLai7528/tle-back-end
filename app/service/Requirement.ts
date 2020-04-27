@@ -121,6 +121,7 @@ export default class RequirementService extends Service {
     const history: Omit<IDescriptionHistory, "_id"> = {
       ownerId,
       requirementId,
+      descriptionId: old._id,
       oldDescription: old,
       newDescription: newer,
       createAt: Date.now(),
@@ -189,5 +190,17 @@ export default class RequirementService extends Service {
     );
 
     return (await this.findById(requirementId)) as IRequirement;
+  }
+
+  public async getDescriptionHistory(
+    ownerId: string,
+    requirementId: string,
+    descriptionId: string
+  ): Promise<IDescriptionHistory[]> {
+    const history: IDescriptionHistory[] = (await this.getCRUD().read(
+      { requirementId, descriptionId, ownerId },
+      this.ctx.model.DescriptionHistory
+    )) as IDescriptionHistory[];
+    return history;
   }
 }

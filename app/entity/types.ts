@@ -4,6 +4,7 @@ export interface IDescriptionHistory {
   _id: string;
   ownerId: string;
   requirementId: string;
+  descriptionId: string;
   oldDescription: IRequirementDescription;
   newDescription: Partial<IRequirementDescription>;
   createAt: number;

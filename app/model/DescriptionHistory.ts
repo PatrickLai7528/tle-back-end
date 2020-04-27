@@ -9,6 +9,7 @@ export default (app) => {
       _id: { type: Schema.Types.ObjectId, auto: true },
       ownerId: { type: Schema.Types.String, required: true },
       requirementId: { type: Schema.Types.String, required: true },
+      descriptionId: { type: Schema.Types.String, required: true },
       oldDescription: { type: RequirementDescriptionSchema(Schema) },
       newDescription: { type: RequirementDescriptionSchema(Schema) },
       createAt: { type: Number, default: Date.now() },
