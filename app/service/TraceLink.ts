@@ -32,6 +32,25 @@ export default class TraceLinkService extends Service {
     )) as ITraceLinkMatrix[];
   }
 
+  public async findByRepoName(
+    ownerId: string,
+    repoName: string
+  ): Promise<ITraceLinkMatrix> {
+    const matrix: ITraceLinkMatrix | null = (
+      await this.getCRUD().read(
+        {
+          relatedRepoName: repoName,
+          relatedRepoOwnerId: ownerId,
+        },
+        this.getModel()
+      )
+    )[0] as ITraceLinkMatrix;
+
+    if (!matrix) throw new Error("No Trace Link Matrix Found");
+
+    return matrix;
+  }
+
   public async findByCommitAndRepoName(
     ownerId: string,
     repoName: string,

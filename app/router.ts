@@ -39,6 +39,11 @@ export default (app: Application) => {
   );
   router.post("/api/tracelink", jwt, controller.traceLink.create);
   router.get("/api/tracelink", jwt, controller.traceLink.query);
+  router.get(
+    "/api/tracelink/matrix",
+    jwt,
+    controller.traceLink.getRepoTraceLinkMatrix
+  );
 
   router.get("/api/tracelink/history", jwt, controller.traceLink.queryHistory);
 
