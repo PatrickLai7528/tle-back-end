@@ -69,8 +69,6 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    console.log(requirement.descriptions);
-
     const newDescriptions: IRequirementDescription[] = [];
     for (const description of requirement.descriptions) {
       if (description._id.toString() !== descriptionId) {

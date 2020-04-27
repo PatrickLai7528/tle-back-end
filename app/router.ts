@@ -13,6 +13,11 @@ export default (app: Application) => {
   router.post("/api/auth/registry", controller.user.registry);
   router.get("/api/auth/access_token", controller.user.tradeGitHubAccessCode);
 
+  router.get(
+    "/api/repository/filenames/:repoId",
+    jwt,
+    controller.repository.getAllFilenames
+  );
   router.get("/api/repository", jwt, controller.repository.index);
   router.post("/api/repository", jwt, controller.repository.create);
   router.get(
