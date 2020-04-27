@@ -1,5 +1,14 @@
 import { ProgramLanguage } from "./ServerOnly";
 
+export interface IDescriptionHistory {
+  _id: string;
+  ownerId: string;
+  requirementId: string;
+  oldDescription: IRequirementDescription;
+  newDescription: Partial<IRequirementDescription>;
+  createAt: number;
+  lastUpdateAt: number;
+}
 export interface IUserActivity {
   _id: string;
   avatarUrl: string;

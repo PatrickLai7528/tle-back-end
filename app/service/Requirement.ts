@@ -1,5 +1,9 @@
 import { Service } from "egg";
-import { IRequirement, IRequirementDescription } from "./../entity/types";
+import {
+  IRequirement,
+  IRequirementDescription,
+  IDescriptionHistory,
+} from "./../entity/types";
 
 export default class RequirementService extends Service {
   private getCRUD() {
@@ -108,6 +112,24 @@ export default class RequirementService extends Service {
     return newRequirement;
   }
 
+  private async addDescriptionHistory(
+    ownerId: string,
+    requirementId: string,
+    old: IRequirementDescription,
+    newer: Partial<IRequirementDescription>
+  ): Promise<void> {
+    const history: Omit<IDescriptionHistory, "_id"> = {
+      ownerId,
+      requirementId,
+      oldDescription: old,
+      newDescription: newer,
+      createAt: Date.now(),
+      lastUpdateAt: Date.now(),
+    };
+
+    await this.getCRUD().create(history, this.ctx.model.DescriptionHistory);
+  }
+
   public async updateDescription(
     ownerId: string,
     requirementId: string,
@@ -123,13 +145,34 @@ export default class RequirementService extends Service {
       throw new Error("This Only Allow Operated By Owner");
 
     const newDescriptions: IRequirementDescription[] = [];
+    let old: IRequirementDescription | null = null;
+    let changeFieldAndValue: Partial<IRequirementDescription> = {};
+
+    type DescriptionKeys = keyof IRequirementDescription;
+    const ingoreKeys: DescriptionKeys[] = ["_id"];
+    const ignore = (key: any) => {
+      return ingoreKeys.indexOf(key) !== -1;
+    };
+
     for (const oldDescription of requirement.descriptions || []) {
       if (description._id.toString() === oldDescription._id.toString()) {
         newDescriptions.push({ ...oldDescription, ...description });
+        old = { ...oldDescription };
+        for (const key of Object.keys(oldDescription)) {
+          if (
+            !ignore(key) &&
+            description[key] &&
+            oldDescription[key] !== description[key]
+          ) {
+            changeFieldAndValue = { [key]: description[key] };
+          }
+        }
       } else {
         newDescriptions.push(oldDescription);
       }
     }
+
+    if (!old) throw new Error("No Requirement Description Found");
 
     const newRequirement: IRequirement = {
       ...requirement,
@@ -137,6 +180,13 @@ export default class RequirementService extends Service {
     };
 
     await this.getCRUD().update(requirement, newRequirement, this.getModel());
+
+    await this.addDescriptionHistory(
+      ownerId,
+      requirementId,
+      old,
+      changeFieldAndValue
+    );
 
     return (await this.findById(requirementId)) as IRequirement;
   }
