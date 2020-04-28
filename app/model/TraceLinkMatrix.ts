@@ -10,6 +10,7 @@ export default (app) => {
       links: [
         {
           requirementDescription: {
+            _id: { type: Schema.Types.ObjectId, auto: true },
             name: { type: String, required: true },
             traced: { type: Boolean, default: false },
             lastUpdateAt: { type: Number, default: Date.now() },
@@ -26,6 +27,7 @@ export default (app) => {
             specialNeeds: { type: String },
           },
           implement: {
+            _id: { type: Schema.Types.ObjectId, auto: true },
             type: { type: String, enum: ["METHOD", "CLASS"], default: "CLASS" },
             fullyQualifiedName: { type: String, required: true },
             traced: { type: Boolean, default: false },
