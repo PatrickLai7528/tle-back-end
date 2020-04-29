@@ -3,8 +3,8 @@ import { ProgramLanguage } from "./ServerOnly";
 export interface IDescriptionHistory {
   _id: string;
   ownerId: string;
-  requirementId: string;
-  descriptionId: string;
+  requirement: string;
+  description: string;
   oldDescription: Partial<IRequirementDescription>;
   newDescription: Partial<IRequirementDescription>;
   createAt: number;
