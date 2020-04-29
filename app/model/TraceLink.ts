@@ -16,6 +16,7 @@ export default (app) => {
       },
       lastUpdateAt: { type: Number, default: Date.now() },
       createAt: { type: Number, default: Date.now() },
+      deleted: { type: Boolean, defualt: false },
     },
     { timestamps: { createdAt: "createAt", updatedAt: "lastUpdateAt" } }
   );
