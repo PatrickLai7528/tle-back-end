@@ -1,5 +1,3 @@
-import { RequirementDescriptionSchema } from "../utils/Schema";
-
 export default (app) => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
@@ -8,14 +6,14 @@ export default (app) => {
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
       ownerId: { type: Schema.Types.String, required: true },
-      requirementId: { type: Schema.Types.String, required: true },
-      descriptionId: { type: Schema.Types.String, required: true },
-      oldDescription: { type: RequirementDescriptionSchema(Schema) },
-      newDescription: { type: RequirementDescriptionSchema(Schema) },
+      requirement: { type: Schema.Types.ObjectId, ref: "Requirement" },
+      description: { type: Schema.Types.String, ref: "RequirementDescription" },
+      oldDescription: { type: Schema.Types.Mixed },
+      newDescription: { type: Schema.Types.Mixed },
       createAt: { type: Number, default: Date.now() },
       lastUpdateAt: { type: Number, default: Date.now() },
     },
-    { timestamps: { createAt: "createAt", updateAt: "lastUpdateAt" } }
+    { timestamps: { createdAt: "createAt", updatedAt: "lastUpdateAt" } }
   );
 
   return mongoose.model(
