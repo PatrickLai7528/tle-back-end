@@ -6,7 +6,7 @@ export default (app) => {
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
       relatedRepoOwnerId: { type: Schema.Types.String, required: true },
-      relatedRepo: { type: Schema.Types.String, required: true },
+      relatedRepoName: { type: Schema.Types.String, required: true },
       descriptions: [
         {
           type: Schema.Types.ObjectId,

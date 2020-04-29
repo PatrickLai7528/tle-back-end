@@ -6,10 +6,9 @@ export default (app) => {
     {
       _id: { type: Schema.Types.ObjectId, auto: true },
       relatedRepoOwnerId: { type: Schema.Types.String, required: true },
-      relatedRepo: {
-        type: Schema.Types.ObjectId,
+      relatedRepoName: {
+        type: Schema.Types.String,
         required: true,
-        ref: "Repository",
       },
       links: [{ type: Schema.Types.ObjectId, ref: "TraceLink" }],
       createAt: { type: Number, default: Date.now() },

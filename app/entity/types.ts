@@ -60,7 +60,7 @@ export interface IRequirement {
   _id: string;
   relatedRepoOwnerId: string;
   descriptions: IRequirementDescription[];
-  relatedRepo: string;
+  relatedRepoName: string;
 }
 
 export interface IBranch {

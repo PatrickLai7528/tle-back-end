@@ -4,7 +4,7 @@ import {
   IRequirementDescription,
   IDescriptionHistory,
 } from "./../entity/types";
-
+import * as mongoose from "mongoose";
 export default class RequirementService extends Service {
   private getCRUD() {
     return this.ctx.service.cRUD;
@@ -20,6 +20,25 @@ export default class RequirementService extends Service {
     return await Promise.all(descriptions.map(this.saveDescription.bind(this)));
   }
 
+  public async saveDescriptionIfNotExists(
+    description: IRequirementDescription
+  ): Promise<string> {
+    const { _id, ...others } = description as any;
+    if (_id && mongoose.Types.ObjectId.isValid(_id)) {
+      const found: IRequirementDescription | null = await this.ctx.model.RequirementDescription.findById(
+        _id
+      );
+      if (!found) {
+        return await this.saveDescription(others);
+      } else {
+        return _id;
+      }
+    } else {
+      const id = await this.saveDescription(others);
+      return id;
+    }
+  }
+
   public async saveDescription(
     description: Omit<IRequirementDescription, "_id">
   ): Promise<string> {
@@ -29,8 +48,9 @@ export default class RequirementService extends Service {
       ctx.model.RequirementDescription.create(
         others,
         (err: any, saved: IRequirementDescription) => {
-          if (err) reject(err);
-          else resolve(saved._id);
+          if (err) {
+            reject(err);
+          } else resolve(saved._id);
         }
       );
     });
@@ -68,7 +88,7 @@ export default class RequirementService extends Service {
     return (
       await this.find({
         relatedRepoOwnerId: ownerId,
-        relatedRepo: repoName,
+        relatedRepoName: repoName,
       })
     )[0];
   }

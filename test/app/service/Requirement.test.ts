@@ -54,7 +54,7 @@ describe("test/app/service/Requirement.test.ts", () => {
 
     const found2 = await ctx.service.requirement.findByRepoName(
       requirement.relatedRepoOwnerId,
-      requirement.relatedRepo
+      requirement.relatedRepoName
     );
     assert(found2?._id.toString() === id);
     assert(Array.isArray(found2?.descriptions));

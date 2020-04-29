@@ -29,13 +29,35 @@ export default class TraceLinkService extends Service {
     traceLink: Omit<ITraceLink, "_id">
   ): Promise<string> {
     const { ctx } = this;
-    return new Promise<string>((resolve, reject) => {
-      const { _id, ...others } = traceLink as any;
-      ctx.model.TraceLink.create(others, (err: any, saved: ITraceLink) => {
-        if (err) reject(err);
-        else resolve(saved._id);
-      });
+    return new Promise<string>(async (resolve, reject) => {
+      const { _id, requirementDescription, ...others } = traceLink as any;
+      ctx.service.requirement
+        .saveDescriptionIfNotExists(requirementDescription)
+        .then((descriptionId) => {
+          ctx.model.TraceLink.create(
+            { ...others, requirementDescription: descriptionId },
+            (err: any, saved: ITraceLink) => {
+              if (err) reject(err);
+              else resolve(saved._id);
+            }
+          );
+        });
     });
+  }
+
+  public async delete(ownerId: string, matrixId: string): Promise<void> {
+    const matrix: any = await this.ctx.model.TraceLinkMatrix.findById(matrixId);
+    if (!matrix) throw new Error("No Requirement Found");
+
+    if (!matrix.relatedRepoOwnerId || matrix.relatedRepoOwnerId !== ownerId)
+      throw new Error("This Only Allow Operated By Owner");
+
+    const { _id, links } = matrix;
+
+    await this.ctx.model.TraceLinkMatrix.deleteOne({ _id });
+    await Promise.all(
+      links.map((id) => this.ctx.model.TraceLink.deleteOne({ _id: id }))
+    );
   }
 
   public async create(matrix: Omit<ITraceLinkMatrix, "_id">): Promise<string> {

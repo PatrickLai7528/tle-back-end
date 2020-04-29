@@ -1,17 +1,43 @@
-// import { app } from "egg-mock/bootstrap";
-// import { ITraceLinkMatrix } from "../../../app/entity/types";
-// import { traceLinkMatrixMocks } from '../../../app/mock/TraceLinkMatrix.mock';
-// const assert = require('power-assert');
+import { app } from "egg-mock/bootstrap";
+import {
+  ITraceLinkMatrix,
+  IRequirementDescription,
+} from "../../../app/entity/types";
+import { traceLinkMatrixMocks } from "../../../app/mock/TraceLinkMatrix.mock";
+const assert = require("power-assert");
 
 describe("test/app/service/TraceLinkMatrix.test.ts", () => {
-  // afterEach(async () => {
-  //    const ctx = app.mockContext();
-  // });
+  afterEach(async () => {
+    const ctx = app.mockContext();
+
+    const matrixs: ITraceLinkMatrix[] = await ctx.service.cRUD.read(
+      {},
+      ctx.model.TraceLinkMatrix
+    );
+    console.warn(
+      `[afterEach] Going to delete '${matrixs.length}' [TraceLinkMatrix] document`
+    );
+    for (const matrix of matrixs) {
+      await ctx.service.traceLink.delete(matrix.relatedRepoOwnerId, matrix._id);
+    }
+
+    // delete requirement description
+    const descriptions: IRequirementDescription[] = await ctx.service.cRUD.read(
+      {},
+      ctx.model.RequirementDescription
+    );
+    for (const description of descriptions) {
+      await ctx.service.cRUD.delete(
+        { _id: description._id },
+        ctx.model.RequirementDescription
+      );
+    }
+  });
 
   it("should add trace link matrix", async () => {
-    // const ctx = app.mockContext();
-    // const matrix: ITraceLinkMatrix = traceLinkMatrixMocks;
-    // const id = await ctx.service.traceLink.create(matrix);
-    // assert(typeof id === "string");
+    const ctx = app.mockContext();
+    const matrix: ITraceLinkMatrix = traceLinkMatrixMocks;
+    const id = await ctx.service.traceLink.create(matrix);
+    assert(typeof id === "string");
   });
 });
