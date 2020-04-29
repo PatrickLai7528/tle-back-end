@@ -3,6 +3,7 @@ import * as assert from "power-assert";
 import {
   IRequirement,
   IRequirementDescription,
+  IDescriptionHistory,
 } from "../../../app/entity/types";
 import { requirementMock } from "../../../app/mock/Requirement.mock";
 import { requirementDescriptionMocks } from "../../../app/mock/RequirementDescription";
@@ -19,6 +20,19 @@ describe("test/app/controller/User.test.ts", () => {
     );
     for (const requirement of requirements) {
       await ctx.service.cRUD.delete(requirement, ctx.model.Requirement);
+      console.warn(`[afterEach] Deleted Requirement: ${requirement._id}`);
+    }
+
+    const histories: IDescriptionHistory[] = await ctx.service.cRUD.read(
+      {},
+      ctx.model.DescriptionHistory
+    );
+    console.warn(
+      `[afterEach] Going to delete '${histories.length}' [DescriptionHistory] document`
+    );
+    for (const history of histories) {
+      await ctx.service.cRUD.delete(history, ctx.model.DescriptionHistory);
+      console.warn(`[afterEach] Deleted DescriptionHistory: ${history._id}`);
     }
   });
 
@@ -97,5 +111,14 @@ describe("test/app/controller/User.test.ts", () => {
       (item) => item._id.toString() === description._id.toString()
     )[0];
     assert(found.name === description.name);
+
+    const descriptionHistory: IDescriptionHistory[] = await ctx.service.requirement.getDescriptionHistory(
+      requirement.relatedRepoOwnerId,
+      id,
+      found._id
+    );
+    // console.log(descriptionHistory);
+    assert(descriptionHistory.length === 1);
+    assert(descriptionHistory[0].newDescription.name === description.name);
   });
 });

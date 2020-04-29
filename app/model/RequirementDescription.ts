@@ -20,7 +20,7 @@ export default (app) => {
       specialNeeds: { type: String },
     },
     {
-      timestamps: { createAt: "createAt", updateAt: "lastUpdateAt" },
+      timestamps: { createdAt: "createAt", updatedAt: "lastUpdateAt" },
     }
   );
 
