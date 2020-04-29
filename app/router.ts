@@ -32,6 +32,7 @@ export default (app: Application) => {
     controller.repository.isRepoImported
   );
 
+  router.post("/api/tracelink/new", jwt, controller.traceLink.addTraceLink);
   router.post(
     "/api/tracelink/init",
     jwt,

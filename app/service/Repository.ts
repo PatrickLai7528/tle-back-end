@@ -102,8 +102,6 @@ export default class RepositoryService extends Service {
       throw new Error("This Only Allow Operated By Owner");
     const { trees } = repo;
 
-    console.log(trees);
-
     const filenames: string[] = [];
 
     const traverse = (node: IFileTreeNode) => {

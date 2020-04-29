@@ -23,6 +23,25 @@ export default class TraceLinkService extends Service {
     await this.getCRUD().create(matrix, this.getModel());
   }
 
+  public async addTraceLink(
+    ownerId: string,
+    repoName,
+    newLink: ITraceLink
+  ): Promise<void> {
+    const matrix: ITraceLinkMatrix = (
+      await this.getCRUD().read({ relatedRepoName: repoName }, this.getModel())
+    )[0] as ITraceLinkMatrix;
+
+    if (!matrix) throw new Error("No Trace Link Matrix Found");
+
+    if (matrix.relatedRepoOwnerId && matrix.relatedRepoOwnerId !== ownerId)
+      throw new Error("This Only Allow Operated By Owner");
+
+    matrix.links.push(newLink);
+
+    await this.getCRUD().update({ _id: matrix._id }, matrix, this.getModel());
+  }
+
   public async find(
     matrix: Partial<ITraceLinkMatrix>
   ): Promise<ITraceLinkMatrix[]> {

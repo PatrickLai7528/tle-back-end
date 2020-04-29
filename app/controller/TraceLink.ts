@@ -23,7 +23,7 @@ export default class TraceLinkController extends Controller {
 
   public async query() {
     const { ctx } = this;
-    const { repoName, file } = ctx.query;
+    const { repoName, file, requirementId } = ctx.query;
     const { githubId } = extractToken(ctx, this.config);
     let found: ITraceLink[] = [];
     if (file) {
@@ -31,6 +31,12 @@ export default class TraceLinkController extends Controller {
         githubId,
         repoName,
         file
+      );
+    } else if (requirementId) {
+      found = await ctx.service.traceLink.findByRequirementIdAndRepoName(
+        githubId,
+        repoName,
+        requirementId
       );
     }
 
@@ -74,5 +80,17 @@ export default class TraceLinkController extends Controller {
 
     ctx.body = { success: true };
     ctx.status = OK;
+  }
+
+  public async addTraceLink() {
+    const { githubId } = extractToken(this.ctx, this.config);
+    const { repoName, newTraceLink } = this.ctx.request.body;
+
+    await this.ctx.service.traceLink.addTraceLink(
+      githubId,
+      repoName,
+      newTraceLink
+    );
+    this.ctx.body = { success: true };
   }
 }
