@@ -5,7 +5,7 @@ export interface IDescriptionHistory {
   ownerId: string;
   requirementId: string;
   descriptionId: string;
-  oldDescription: IRequirementDescription;
+  oldDescription: Partial<IRequirementDescription>;
   newDescription: Partial<IRequirementDescription>;
   createAt: number;
   lastUpdateAt: number;
@@ -58,7 +58,7 @@ export interface IRequirementDescription {
 
 export interface IRequirement {
   _id: string;
-  relatedRepoOwnerId?: string;
+  relatedRepoOwnerId: string;
   descriptions: IRequirementDescription[];
   relatedRepoName: string;
 }
