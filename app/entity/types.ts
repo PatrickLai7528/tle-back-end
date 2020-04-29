@@ -34,7 +34,7 @@ export interface ITraceLink {
 export interface ITraceLinkMatrix {
   _id: string;
   links: ITraceLink[];
-  relatedRepoOwnerId?: string;
+  relatedRepoOwnerId: string;
   relatedRepoName: string;
 }
 
@@ -60,7 +60,7 @@ export interface IRequirement {
   _id: string;
   relatedRepoOwnerId: string;
   descriptions: IRequirementDescription[];
-  relatedRepoName: string;
+  relatedRepo: string;
 }
 
 export interface IBranch {

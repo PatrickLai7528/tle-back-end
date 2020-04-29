@@ -19,8 +19,37 @@ export default class TraceLinkService extends Service {
     return this.ctx.model.TraceLinkMatrix;
   }
 
-  public async create(matrix: ITraceLinkMatrix): Promise<void> {
-    await this.getCRUD().create(matrix, this.getModel());
+  public async saveTraceLinks(
+    traceLinks: Omit<ITraceLink, "_id">[]
+  ): Promise<string[]> {
+    return await Promise.all(traceLinks.map(this.saveTraceLink.bind(this)));
+  }
+
+  public async saveTraceLink(
+    traceLink: Omit<ITraceLink, "_id">
+  ): Promise<string> {
+    const { ctx } = this;
+    return new Promise<string>((resolve, reject) => {
+      const { _id, ...others } = traceLink as any;
+      ctx.model.TraceLink.create(others, (err: any, saved: ITraceLink) => {
+        if (err) reject(err);
+        else resolve(saved._id);
+      });
+    });
+  }
+
+  public async create(matrix: Omit<ITraceLinkMatrix, "_id">): Promise<string> {
+    const { _id, links, ...others } = matrix as any;
+
+    const traceLinkIds: string[] = await this.saveTraceLinks(links);
+
+    return await this.getCRUD().create(
+      {
+        ...others,
+        links: traceLinkIds,
+      },
+      this.getModel()
+    );
   }
 
   public async addTraceLink(

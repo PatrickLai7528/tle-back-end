@@ -7,7 +7,7 @@ const fromIndex = Math.round(
 
 export const requirementMock: IRequirement = {
   _id: "jkladjf",
-  relatedRepoName: "RELATED REPO NAME",
+  relatedRepo: "RELATED REPO NAME",
   relatedRepoOwnerId: "RELATED REPO OWNER ID",
   descriptions: requirementDescriptionMocks.slice(fromIndex, fromIndex + 10),
 };

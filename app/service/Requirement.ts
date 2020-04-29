@@ -68,13 +68,15 @@ export default class RequirementService extends Service {
     return (
       await this.find({
         relatedRepoOwnerId: ownerId,
-        relatedRepoName: repoName,
+        relatedRepo: repoName,
       })
     )[0];
   }
 
   public async delete(ownerId: string, requirementId: string): Promise<void> {
-    const requirement: IRequirement | null = await this.findById(requirementId);
+    const requirement: any = await this.ctx.model.Requirement.findById(
+      requirementId
+    );
     if (!requirement) throw new Error("No Requirement Found");
 
     if (
@@ -83,7 +85,14 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    await this.getCRUD().delete(requirement, this.getModel());
+    const { _id, descriptions } = requirement;
+
+    await this.ctx.model.Requirement.deleteOne({ _id });
+    await Promise.all(
+      descriptions.map((id) =>
+        this.ctx.model.RequirementDescription.deleteOne({ _id: id })
+      )
+    );
   }
 
   public async deleteDescription(

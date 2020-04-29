@@ -8,9 +8,11 @@ import {
 import { requirementMock } from "../../../app/mock/Requirement.mock";
 import { requirementDescriptionMocks } from "../../../app/mock/RequirementDescription";
 
-describe("test/app/controller/User.test.ts", () => {
+describe("test/app/service/Requirement.test.ts", () => {
   afterEach(async () => {
     const ctx = app.mockContext();
+
+    // delete all requirement
     const requirements: IRequirement[] = await ctx.service.cRUD.read(
       {},
       ctx.model.Requirement
@@ -19,10 +21,13 @@ describe("test/app/controller/User.test.ts", () => {
       `[afterEach] Going to delete '${requirements.length}' [Requirement] document`
     );
     for (const requirement of requirements) {
-      await ctx.service.cRUD.delete(requirement, ctx.model.Requirement);
-      console.warn(`[afterEach] Deleted Requirement: ${requirement._id}`);
+      await ctx.service.requirement.delete(
+        requirement.relatedRepoOwnerId,
+        requirement._id
+      );
     }
 
+    // delete all description history
     const histories: IDescriptionHistory[] = await ctx.service.cRUD.read(
       {},
       ctx.model.DescriptionHistory
@@ -32,7 +37,6 @@ describe("test/app/controller/User.test.ts", () => {
     );
     for (const history of histories) {
       await ctx.service.cRUD.delete(history, ctx.model.DescriptionHistory);
-      console.warn(`[afterEach] Deleted DescriptionHistory: ${history._id}`);
     }
   });
 
@@ -50,7 +54,7 @@ describe("test/app/controller/User.test.ts", () => {
 
     const found2 = await ctx.service.requirement.findByRepoName(
       requirement.relatedRepoOwnerId,
-      requirement.relatedRepoName
+      requirement.relatedRepo
     );
     assert(found2?._id.toString() === id);
     assert(Array.isArray(found2?.descriptions));
