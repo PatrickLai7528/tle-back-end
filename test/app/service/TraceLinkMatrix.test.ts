@@ -39,5 +39,27 @@ describe("test/app/service/TraceLinkMatrix.test.ts", () => {
     const matrix: ITraceLinkMatrix = traceLinkMatrixMocks;
     const id = await ctx.service.traceLink.create(matrix);
     assert(typeof id === "string");
+
+    const found: ITraceLinkMatrix | null = await ctx.service.traceLink.findById(
+      id
+    );
+    assert(!!found);
+    assert(found?._id.toString() === id);
+    assert(found?.relatedRepoName === matrix.relatedRepoName);
+  });
+
+  it("should find by repo name", async () => {
+    const ctx = app.mockContext();
+    const matrix: ITraceLinkMatrix = traceLinkMatrixMocks;
+    const id = await ctx.service.traceLink.create(matrix);
+    assert(typeof id === "string");
+
+    const found: ITraceLinkMatrix | null = await ctx.service.traceLink.findByRepoName(
+      matrix.relatedRepoOwnerId,
+      matrix.relatedRepoName
+    );
+    assert(!!found);
+    assert(found?._id.toString() === id);
+    assert(found?.relatedRepoName === matrix.relatedRepoName);
   });
 });

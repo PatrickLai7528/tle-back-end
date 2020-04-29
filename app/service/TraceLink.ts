@@ -93,13 +93,26 @@ export default class TraceLinkService extends Service {
     await this.getCRUD().update({ _id: matrix._id }, matrix, this.getModel());
   }
 
+  public async findById(id: string): Promise<ITraceLinkMatrix | null> {
+    return (await this.find({ _id: id }))[0];
+  }
+
   public async find(
     matrix: Partial<ITraceLinkMatrix>
   ): Promise<ITraceLinkMatrix[]> {
-    return (await this.getCRUD().read(
-      { ...matrix },
-      this.getModel()
-    )) as ITraceLinkMatrix[];
+    // return (await this.getCRUD().read(
+    //   { ...matrix },
+    //   this.getModel()
+    // )) as ITraceLinkMatrix[];
+    const res: ITraceLinkMatrix[] = (
+      await this.getModel()
+        .find(matrix)
+        .populate({
+          path: "links",
+          populate: { path: "requirementDescription" },
+        })
+    ).map((item) => item.toObject());
+    return res;
   }
 
   public async findByRepoName(
@@ -107,13 +120,10 @@ export default class TraceLinkService extends Service {
     repoName: string
   ): Promise<ITraceLinkMatrix> {
     const matrix: ITraceLinkMatrix | null = (
-      await this.getCRUD().read(
-        {
-          relatedRepoName: repoName,
-          relatedRepoOwnerId: ownerId,
-        },
-        this.getModel()
-      )
+      await this.find({
+        relatedRepoName: repoName,
+        relatedRepoOwnerId: ownerId,
+      })
     )[0] as ITraceLinkMatrix;
 
     if (!matrix) throw new Error("No Trace Link Matrix Found");
