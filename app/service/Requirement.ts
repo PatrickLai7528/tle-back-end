@@ -150,8 +150,8 @@ export default class RequirementService extends Service {
   ): Promise<void> {
     const history: Omit<IDescriptionHistory, "_id"> = {
       ownerId,
-      requirementId,
-      descriptionId: descriptionId,
+      requirement: requirementId,
+      description: descriptionId,
       oldDescription: old,
       newDescription: newer,
       createAt: Date.now(),
@@ -175,9 +175,9 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    const oldDescription: IRequirementDescription | null = await this.ctx.model.RequirementDescription.findById(
-      description._id
-    );
+    const oldDescription: IRequirementDescription | null = (
+      await this.ctx.model.RequirementDescription.findById(description._id)
+    ).toObject();
     if (!oldDescription) throw new Error("No Description Found");
 
     let oldFieldAndValue: Partial<IRequirementDescription> = {};
@@ -192,18 +192,21 @@ export default class RequirementService extends Service {
       "lastUpdateBy",
     ];
     const ignore = (key: any) => {
-      return ingoreKeys.indexOf(key) !== -1;
+      return ingoreKeys.indexOf(key) >= 0;
     };
-    if (description._id.toString() === oldDescription._id.toString()) {
-      for (const key of Object.keys(oldDescription)) {
-        if (
-          !ignore(key) &&
-          description[key] &&
-          oldDescription[key] !== description[key]
-        ) {
-          changeFieldAndValue = { [key]: description[key] };
-          oldFieldAndValue = { [key]: oldDescription[key] };
-        }
+
+    // object diff
+    for (const key of Object.keys(oldDescription)) {
+      if (
+        !ignore(key) &&
+        description[key] &&
+        oldDescription[key] !== description[key]
+      ) {
+        changeFieldAndValue = {
+          ...changeFieldAndValue,
+          [key]: description[key],
+        };
+        oldFieldAndValue = { ...oldFieldAndValue, [key]: oldDescription[key] };
       }
     }
 
@@ -230,7 +233,7 @@ export default class RequirementService extends Service {
     descriptionId: string
   ): Promise<IDescriptionHistory[]> {
     const history: IDescriptionHistory[] = (await this.getCRUD().read(
-      { requirementId, descriptionId, ownerId },
+      { requirement: requirementId, description: descriptionId, ownerId },
       this.ctx.model.DescriptionHistory
     )) as IDescriptionHistory[];
     return history;

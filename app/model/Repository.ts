@@ -59,7 +59,7 @@ export default (app) => {
       createAt: { type: Number, default: Date.now() },
     },
     {
-      timestampes: { createAt: "createAt", updateAt: "lastUpdateAt" },
+      timestampes: { createdAt: "createAt", updatedAt: "lastUpdateAt" },
     }
   );
 

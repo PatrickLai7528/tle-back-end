@@ -17,7 +17,7 @@ export default (app) => {
       createAt: { type: Number, default: Date.now() },
     },
     {
-      timestamps: { createAt: "createAt", updateAt: "lastUpdateAt" },
+      timestamps: { createdAt: "createAt", updatedAt: "lastUpdateAt" },
     }
   );
 
