@@ -14,17 +14,45 @@ export default class RequirementService extends Service {
     return this.ctx.model.Requirement;
   }
 
-  public async create(requirement: IRequirement): Promise<void> {
-    await this.getCRUD().create(requirement, this.getModel());
+  public async saveDescriptions(
+    descriptions: Omit<IRequirementDescription, "_id">[]
+  ): Promise<string[]> {
+    return await Promise.all(descriptions.map(this.saveDescription.bind(this)));
+  }
+
+  public async saveDescription(
+    description: Omit<IRequirementDescription, "_id">
+  ): Promise<string> {
+    const { ctx } = this;
+    return new Promise<string>((resolve, reject) => {
+      const { _id, ...others } = description as any;
+      ctx.model.RequirementDescription.create(
+        others,
+        (err: any, saved: IRequirementDescription) => {
+          if (err) reject(err);
+          else resolve(saved._id);
+        }
+      );
+    });
+  }
+
+  public async create(requirement: Omit<IRequirement, "_id">): Promise<string> {
+    const { descriptions, _id, ...others } = requirement as any;
+
+    const descriptionIds: string[] = await this.saveDescriptions(descriptions);
+
+    return this.getCRUD().create(
+      { ...others, descriptions: descriptionIds },
+      this.getModel()
+    );
   }
 
   public async find(
     requirement: Partial<IRequirement>
   ): Promise<IRequirement[]> {
-    const res = (await this.getCRUD().read(
-      { ...requirement },
-      this.getModel()
-    )) as IRequirement[];
+    const res: IRequirement[] = (
+      await this.getModel().find(requirement).populate("descriptions")
+    ).map((item) => item.toObject());
     return res;
   }
 
@@ -92,7 +120,7 @@ export default class RequirementService extends Service {
   public async addDescription(
     ownerId: string,
     requirementId: string,
-    description: IRequirementDescription
+    description: Omit<IRequirementDescription, "_id">
   ): Promise<IRequirement> {
     const requirement: IRequirement | null = await this.findById(requirementId);
     if (!requirement) throw new Error("No Requirement Found");
@@ -103,25 +131,27 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    const newRequirement: IRequirement = {
-      ...requirement,
-      descriptions: [...requirement.descriptions, description],
-    };
+    const descriptionId = await this.saveDescription(description);
 
-    await this.getCRUD().update(requirement, newRequirement, this.getModel());
-    return newRequirement;
+    await this.getModel().update(
+      { _id: requirement._id },
+      { $push: { descriptions: descriptionId } }
+    );
+
+    return (await this.findById(requirementId)) as IRequirement;
   }
 
   private async addDescriptionHistory(
     ownerId: string,
     requirementId: string,
-    old: IRequirementDescription,
+    descriptionId: string,
+    old: Partial<IRequirementDescription>,
     newer: Partial<IRequirementDescription>
   ): Promise<void> {
     const history: Omit<IDescriptionHistory, "_id"> = {
       ownerId,
       requirementId,
-      descriptionId: old._id,
+      descriptionId: descriptionId,
       oldDescription: old,
       newDescription: newer,
       createAt: Date.now(),
@@ -145,47 +175,49 @@ export default class RequirementService extends Service {
     )
       throw new Error("This Only Allow Operated By Owner");
 
-    const newDescriptions: IRequirementDescription[] = [];
-    let old: IRequirementDescription | null = null;
+    const oldDescription: IRequirementDescription | null = await this.ctx.model.RequirementDescription.findById(
+      description._id
+    );
+    if (!oldDescription) throw new Error("No Description Found");
+
+    let oldFieldAndValue: Partial<IRequirementDescription> = {};
     let changeFieldAndValue: Partial<IRequirementDescription> = {};
 
     type DescriptionKeys = keyof IRequirementDescription;
-    const ingoreKeys: DescriptionKeys[] = ["_id"];
+    const ingoreKeys: DescriptionKeys[] = [
+      "_id",
+      "lastUpdateAt",
+      "createAt",
+      "createBy",
+      "lastUpdateBy",
+    ];
     const ignore = (key: any) => {
       return ingoreKeys.indexOf(key) !== -1;
     };
-
-    for (const oldDescription of requirement.descriptions || []) {
-      if (description._id.toString() === oldDescription._id.toString()) {
-        newDescriptions.push({ ...oldDescription, ...description });
-        old = { ...oldDescription };
-        for (const key of Object.keys(oldDescription)) {
-          if (
-            !ignore(key) &&
-            description[key] &&
-            oldDescription[key] !== description[key]
-          ) {
-            changeFieldAndValue = { [key]: description[key] };
-          }
+    if (description._id.toString() === oldDescription._id.toString()) {
+      for (const key of Object.keys(oldDescription)) {
+        if (
+          !ignore(key) &&
+          description[key] &&
+          oldDescription[key] !== description[key]
+        ) {
+          changeFieldAndValue = { [key]: description[key] };
+          oldFieldAndValue = { [key]: oldDescription[key] };
         }
-      } else {
-        newDescriptions.push(oldDescription);
       }
     }
 
-    if (!old) throw new Error("No Requirement Description Found");
-
-    const newRequirement: IRequirement = {
-      ...requirement,
-      descriptions: newDescriptions,
-    };
-
-    await this.getCRUD().update(requirement, newRequirement, this.getModel());
+    const { _id, ...others } = description;
+    await this.ctx.model.RequirementDescription.update(
+      { _id: description._id },
+      others
+    );
 
     await this.addDescriptionHistory(
       ownerId,
       requirementId,
-      old,
+      description._id,
+      oldFieldAndValue,
       changeFieldAndValue
     );
 

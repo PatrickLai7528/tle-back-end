@@ -10,6 +10,11 @@ describe("test/app/controller/User.test.ts", () => {
     for (const user of users) {
       await ctx.service.cRUD.delete(user, ctx.model.User);
     }
+
+    const salt: any = await ctx.service.cRUD.read({}, ctx.model.SaltTable);
+    for (const i of salt) {
+      await ctx.service.cRUD.delete(i, ctx.model.SaltTable);
+    }
   });
 
   it("should log in and registry", async () => {
@@ -22,6 +27,6 @@ describe("test/app/controller/User.test.ts", () => {
 
     const logInRes = await app.httpRequest().post("/api/auth/login").send(user);
     assert(logInRes.body.success);
-    assert(typeof logInRes.body.payload === "string");
+    assert(typeof logInRes.body.payload.token === "string");
   });
 });
