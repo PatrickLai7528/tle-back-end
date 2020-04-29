@@ -60,7 +60,7 @@ export default class TraceLinkController extends Controller {
     const { githubId } = extractToken(ctx, this.config);
     const history:
       | ITraceLinkHistory
-      | undefined = await ctx.service.traceLink.findByCommitAndRepoName(
+      | undefined = await ctx.service.traceLink.findHistoryByCommitAndRepoName(
       githubId,
       repoName,
       commitSha

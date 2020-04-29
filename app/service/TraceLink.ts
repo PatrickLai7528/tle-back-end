@@ -131,7 +131,7 @@ export default class TraceLinkService extends Service {
     return matrix;
   }
 
-  public async findByCommitAndRepoName(
+  public async findHistoryByCommitAndRepoName(
     ownerId: string,
     repoName: string,
     commitSha: string
