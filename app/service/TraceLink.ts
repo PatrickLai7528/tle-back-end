@@ -78,9 +78,9 @@ export default class TraceLinkService extends Service {
     ownerId: string,
     repoName,
     newLink: ITraceLink
-  ): Promise<void> {
+  ): Promise<ITraceLink> {
     const matrix: ITraceLinkMatrix = (
-      await this.getCRUD().read({ relatedRepoName: repoName }, this.getModel())
+      await this.find({ relatedRepoName: repoName })
     )[0] as ITraceLinkMatrix;
 
     if (!matrix) throw new Error("No Trace Link Matrix Found");
@@ -88,9 +88,13 @@ export default class TraceLinkService extends Service {
     if (matrix.relatedRepoOwnerId && matrix.relatedRepoOwnerId !== ownerId)
       throw new Error("This Only Allow Operated By Owner");
 
-    matrix.links.push(newLink);
+    const traceLinkId: string = await this.saveTraceLink(newLink);
+    await this.getModel().update(
+      { _id: matrix._id },
+      { $push: { links: traceLinkId } }
+    );
 
-    await this.getCRUD().update({ _id: matrix._id }, matrix, this.getModel());
+    return await this.ctx.model.TraceLink.findById(traceLinkId);
   }
 
   public async findById(id: string): Promise<ITraceLinkMatrix | null> {
@@ -154,10 +158,10 @@ export default class TraceLinkService extends Service {
     };
   }
 
-  public async findByRequirementIdAndRepoName(
+  public async findByDescriptionIdAndRepoName(
     ownerId: string,
     repoName: string,
-    requirementId: string
+    descriptionId: string
   ): Promise<ITraceLink[]> {
     const matrix: ITraceLinkMatrix = (
       await this.find({
@@ -167,8 +171,21 @@ export default class TraceLinkService extends Service {
     )[0];
 
     if (!matrix) return [];
-    console.log(requirementId);
-    const traceLinks: ITraceLink[] = matrix.links || [];
+    const traceLinks: ITraceLink[] = (matrix.links || []).filter((link) => {
+      if (link && link.requirementDescription) {
+        console.log(
+          link.requirementDescription._id.toString(),
+          descriptionId.toString(),
+          link.requirementDescription._id.toString() ===
+            descriptionId.toString()
+        );
+        return (
+          link.requirementDescription._id.toString() ===
+          descriptionId.toString()
+        );
+      } else return false;
+    });
+    console.log(traceLinks);
     return traceLinks;
   }
 
