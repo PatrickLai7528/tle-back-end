@@ -173,19 +173,12 @@ export default class TraceLinkService extends Service {
     if (!matrix) return [];
     const traceLinks: ITraceLink[] = (matrix.links || []).filter((link) => {
       if (link && link.requirementDescription) {
-        console.log(
-          link.requirementDescription._id.toString(),
-          descriptionId.toString(),
-          link.requirementDescription._id.toString() ===
-            descriptionId.toString()
-        );
         return (
           link.requirementDescription._id.toString() ===
           descriptionId.toString()
         );
       } else return false;
     });
-    console.log(traceLinks);
     return traceLinks;
   }
 
@@ -246,5 +239,36 @@ export default class TraceLinkService extends Service {
         };
       }) as any,
     };
+  }
+
+  public async deleteTraceLink(
+    ownerId: string,
+    matrixId: string,
+    traceLink: ITraceLink
+  ): Promise<void> {
+    const { _id } = traceLink;
+
+    const matrix: ITraceLinkMatrix | null = await this.findById(matrixId);
+
+    if (!matrix) throw new Error("No Matrix Found");
+    if (matrix.relatedRepoOwnerId && matrix.relatedRepoOwnerId !== ownerId)
+      throw new Error("This Only Allow Operated By Owner");
+
+    const traceLinkExist: boolean = (matrix.links || []).some((link) => {
+      return link._id.toString() === _id.toString();
+    });
+
+    if (!traceLinkExist) throw new Error("No Related Trace Link Found");
+
+    const found: ITraceLink | null = await this.ctx.model.TraceLink.findOneAndDelete(
+      { _id }
+    );
+
+    if (!found) return;
+
+    await this.getModel().findOneAndUpdate(
+      { _id: matrix._id },
+      { $pullAll: { links: [found._id] } }
+    );
   }
 }

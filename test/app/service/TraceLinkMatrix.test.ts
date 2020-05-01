@@ -62,4 +62,34 @@ describe("test/app/service/TraceLinkMatrix.test.ts", () => {
     assert(found?._id.toString() === id);
     assert(found?.relatedRepoName === matrix.relatedRepoName);
   });
+
+  it("should delete trace link", async () => {
+    const ctx = app.mockContext();
+    const matrix: ITraceLinkMatrix = traceLinkMatrixMocks;
+    const id = await ctx.service.traceLink.create(matrix);
+    assert(typeof id === "string");
+
+    const found: ITraceLinkMatrix | null = await ctx.service.traceLink.findByRepoName(
+      matrix.relatedRepoOwnerId,
+      matrix.relatedRepoName
+    );
+    assert(!!found);
+    assert(found?._id.toString() === id);
+    assert(found?.relatedRepoName === matrix.relatedRepoName);
+
+    await ctx.service.traceLink.deleteTraceLink(
+      matrix.relatedRepoOwnerId,
+      found._id,
+      found.links[0]
+    );
+
+    const found2: ITraceLinkMatrix | null = await ctx.service.traceLink.findByRepoName(
+      matrix.relatedRepoOwnerId,
+      matrix.relatedRepoName
+    );
+    assert(!!found2);
+    assert(found2?._id.toString() === id);
+    assert(found2?.relatedRepoName === matrix.relatedRepoName);
+    assert(found2.links.length + 1 === found.links.length);
+  });
 });
