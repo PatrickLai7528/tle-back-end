@@ -4,12 +4,6 @@ import { INTERNAL_SERVER_ERROR } from "http-status-codes";
 export default (appInfo: EggAppInfo) => {
   const config = {} as PowerPartial<EggAppConfig>;
 
-  config.cluster = {
-    listen: {
-      port: 3000,
-    },
-  };
-
   config.githubApps = {
     clientID: "Iv1.61514a0dc0e75d1e",
     clientSecret: "5684cf24b2dc1613c82e1c1c11fb3a9ac6abcf3c",
