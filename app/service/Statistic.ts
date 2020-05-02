@@ -4,10 +4,8 @@ import {
   ITraceLink,
   IStatistic,
   IRequirementDescription,
-  ICommit,
 } from "./../entity/types";
 import { Service } from "egg";
-import { ITraceLinkHistory } from "../entity/ServerOnly";
 
 export default class Statistic extends Service {
   private async findAndCheckRepo(
@@ -23,41 +21,6 @@ export default class Statistic extends Service {
       throw new Error("This Only Allow Operated By Owner");
 
     return repository;
-  }
-
-  public async getCommitStatistic(
-    ownerId: string,
-    repoId: string
-  ): Promise<IStatistic[]> {
-    const repository: IImportedRepository = await this.findAndCheckRepo(
-      ownerId,
-      repoId
-    );
-    const commits: ICommit[] = (repository.commits || []).sort(
-      (a, b) => a.committedAt - b.committedAt
-    );
-
-    const statistics: IStatistic[] = [];
-
-    for (const commit of commits) {
-      const history:
-        | ITraceLinkHistory
-        | undefined = await this.ctx.service.traceLink.findHistoryByCommitAndRepoName(
-        ownerId,
-        repository.name,
-        commit.sha
-      );
-      if (history)
-        statistics.push({
-          label: commit.message,
-          value: [
-            commit.stats.total,
-            history.removed.traceLinks.length + history.added.traceLinks.length,
-          ],
-        });
-    }
-
-    return statistics;
   }
 
   public async getRequirementStatistic(ownerId: string, repoId: string) {
@@ -139,7 +102,7 @@ export default class Statistic extends Service {
       } = link;
       for (const item of statistics) {
         if (item.label.toString() === fullyQualifiedName.toString()) {
-          (item.value as number)++;
+          item.value++;
         }
       }
     });
