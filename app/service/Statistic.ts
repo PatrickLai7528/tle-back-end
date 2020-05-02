@@ -2,15 +2,16 @@ import {
   IFileTreeNode,
   IImportedRepository,
   ITraceLink,
+  IStatistic,
+  IRequirementDescription,
 } from "./../entity/types";
 import { Service } from "egg";
-import { IStatistic } from "../entity/ServerOnly";
 
 export default class Statistic extends Service {
-  public async getFileStatistic(
+  private async findAndCheckRepo(
     ownerId: string,
     repoId: string
-  ): Promise<IStatistic[]> {
+  ): Promise<IImportedRepository> {
     const repository: IImportedRepository | null = await this.service.repository.findById(
       repoId
     );
@@ -18,6 +19,58 @@ export default class Statistic extends Service {
     if (!repository) throw new Error("No Repository Found");
     if (repository.ownerId !== ownerId)
       throw new Error("This Only Allow Operated By Owner");
+
+    return repository;
+  }
+
+  public async getRequirementStatistic(ownerId: string, repoId: string) {
+    const repository: IImportedRepository = await this.findAndCheckRepo(
+      ownerId,
+      repoId
+    );
+
+    const descriptions: IRequirementDescription[] = (
+      await this.ctx.service.requirement.findByRepoName(
+        ownerId,
+        repository.name
+      )
+    ).descriptions;
+
+    const traceLinks: ITraceLink[] = await this.ctx.service.traceLink.getTraceLinkByRepoName(
+      ownerId,
+      repository.name
+    );
+
+    const statistics: {
+      description: IRequirementDescription;
+      value: number;
+    }[] = descriptions.map((description) => ({ description, value: 0 }));
+
+    for (const link of traceLinks) {
+      for (const item of statistics) {
+        if (
+          link.requirementDescription._id.toString() ===
+          item.description._id.toString()
+        ) {
+          item.value++;
+        }
+      }
+    }
+
+    return statistics.map((item) => ({
+      label: item.description.name,
+      value: item.value,
+    }));
+  }
+
+  public async getFileStatistic(
+    ownerId: string,
+    repoId: string
+  ): Promise<IStatistic[]> {
+    const repository: IImportedRepository = await this.findAndCheckRepo(
+      ownerId,
+      repoId
+    );
 
     const filenames: string[] = [];
 

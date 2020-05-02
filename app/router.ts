@@ -73,4 +73,9 @@ export default (app: Application) => {
   );
 
   router.get("/api/statistic/file", jwt, controller.statistic.getFileStatistic);
+  router.get(
+    "/api/statistic/requirement",
+    jwt,
+    controller.statistic.getRequirementStatistic
+  );
 };
