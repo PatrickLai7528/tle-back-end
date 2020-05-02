@@ -1,5 +1,10 @@
 import { ProgramLanguage } from "./ServerOnly";
 
+export interface IStatistic {
+  label: string;
+  value: number;
+}
+
 export interface IDescriptionHistory {
   _id: string;
   ownerId: string;

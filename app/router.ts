@@ -32,6 +32,7 @@ export default (app: Application) => {
     controller.repository.isRepoImported
   );
 
+  router.delete("/api/tracelink", jwt, controller.traceLink.deleteTraceLink);
   router.post("/api/tracelink/new", jwt, controller.traceLink.addTraceLink);
   router.post(
     "/api/tracelink/init",
@@ -70,4 +71,6 @@ export default (app: Application) => {
     jwt,
     controller.requirement.getDescriptionHistory
   );
+
+  router.get("/api/statistic/file", jwt, controller.statistic.getFileStatistic);
 };
