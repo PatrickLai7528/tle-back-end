@@ -135,6 +135,17 @@ export default class TraceLinkService extends Service {
     return matrix;
   }
 
+  public async getTraceLinkByRepoName(
+    ownerId: string,
+    repoName: string
+  ): Promise<ITraceLink[]> {
+    const matrix: ITraceLinkMatrix | null = await this.findByRepoName(
+      ownerId,
+      repoName
+    );
+    return matrix ? matrix.links || [] : [];
+  }
+
   public async findHistoryByCommitAndRepoName(
     ownerId: string,
     repoName: string,

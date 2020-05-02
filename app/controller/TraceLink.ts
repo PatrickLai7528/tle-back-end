@@ -93,4 +93,17 @@ export default class TraceLinkController extends Controller {
     );
     this.ctx.body = { success: true, payload: traceLinkWithId };
   }
+
+  public async deleteTraceLink() {
+    const { githubId } = extractToken(this.ctx, this.config);
+    const { matrixId, traceLink } = this.ctx.request.body;
+
+    await this.ctx.service.traceLink.deleteTraceLink(
+      githubId,
+      matrixId,
+      traceLink
+    );
+
+    this.ctx.body = { success: true };
+  }
 }
