@@ -1,8 +1,8 @@
 import { ProgramLanguage } from "./ServerOnly";
 
 export interface IStatistic {
-  label: string;
-  value: number;
+  label: any;
+  value: number | number[];
 }
 
 export interface IDescriptionHistory {

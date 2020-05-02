@@ -34,9 +34,18 @@ export default (appInfo: EggAppInfo) => {
     credentials: true,
   };
 
-  // database for testing
+  // // database for testing
+  // config.mongoose = {
+  //   url: "mongodb://localhost:27017/tle",
+  //   options: {},
+  // };
+
+  const user = "patrick";
+  const password = "W3nyxwtY6bP8xBp";
+  const database = "awardchaser";
+
   config.mongoose = {
-    url: "mongodb://localhost:27017/tle",
+    url: `mongodb://${user}:${password}@dds-m5ebe0a91746a2c4-pub.mongodb.rds.aliyuncs.com:3717/${database}`,
     options: {},
   };
 
