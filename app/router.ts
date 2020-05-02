@@ -78,6 +78,4 @@ export default (app: Application) => {
     jwt,
     controller.statistic.getRequirementStatistic
   );
-
-  router.get("/test", controller.test.test);
 };
