@@ -122,7 +122,7 @@ export default class TraceLinkService extends Service {
   public async findByRepoName(
     ownerId: string,
     repoName: string
-  ): Promise<ITraceLinkMatrix> {
+  ): Promise<ITraceLinkMatrix | null> {
     const matrix: ITraceLinkMatrix | null = (
       await this.find({
         relatedRepoName: repoName,
@@ -130,9 +130,7 @@ export default class TraceLinkService extends Service {
       })
     )[0] as ITraceLinkMatrix;
 
-    if (!matrix) throw new Error("No Trace Link Matrix Found");
-
-    return matrix;
+    return matrix ? matrix : null;
   }
 
   public async getTraceLinkByRepoName(

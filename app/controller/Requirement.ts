@@ -21,7 +21,7 @@ export default class RequirementController extends Controller {
     const { ctx } = this;
     const { repoName } = ctx.query;
     const { githubId } = extractToken(ctx, this.config);
-    const res: IRequirement = await ctx.service.requirement.findByRepoName(
+    const res: IRequirement | null = await ctx.service.requirement.findByRepoName(
       githubId,
       repoName
     );

@@ -3,9 +3,21 @@ import {
   IRecentRepo,
   ICommit,
   IFileTreeNode,
+  IRequirement,
+  ITraceLinkMatrix,
 } from "./../entity/types";
 import { Service } from "egg";
 import CRUD from "./CRUD";
+
+type DeleteRepositoryOptions = {
+  deleteRequirement?: boolean;
+  deleteTraceLinkMatrix?: boolean;
+};
+
+const defaultDeleteRepositoryOptions: DeleteRepositoryOptions = {
+  deleteRequirement: true,
+  deleteTraceLinkMatrix: true,
+};
 
 export default class RepositoryService extends Service {
   private getCRUD(): CRUD {
@@ -14,6 +26,40 @@ export default class RepositoryService extends Service {
 
   private getModel() {
     return this.ctx.model.Repository;
+  }
+
+  public async delete(
+    ownerId: string,
+    repoId: string,
+    options: Partial<DeleteRepositoryOptions> = defaultDeleteRepositoryOptions
+  ): Promise<void> {
+    const repo: IImportedRepository | undefined = await this.findById(repoId);
+
+    if (!repo) throw new Error("No Repository Found");
+    if (repo.ownerId !== ownerId)
+      throw new Error("This Only Allow Operated By Owner");
+
+    await this.ctx.model.Repository.deleteOne({ _id: repo._id });
+
+    const { deleteRequirement, deleteTraceLinkMatrix } = options;
+
+    if (deleteRequirement) {
+      const requirement: IRequirement | null = await this.ctx.service.requirement.findByRepoName(
+        ownerId,
+        repo.name
+      );
+      if (requirement)
+        await this.ctx.service.requirement.delete(ownerId, requirement._id);
+    }
+
+    if (deleteTraceLinkMatrix) {
+      const traceLinkMatrix: ITraceLinkMatrix | null = await this.ctx.service.traceLink.findByRepoName(
+        ownerId,
+        repo.name
+      );
+      if (traceLinkMatrix)
+        await this.ctx.service.traceLink.delete(ownerId, traceLinkMatrix._id);
+    }
   }
 
   public async findCommitBySha(
@@ -43,9 +89,9 @@ export default class RepositoryService extends Service {
     )) as IImportedRepository[];
   }
 
-  public async create(repo: IImportedRepository): Promise<void> {
+  public async create(repo: IImportedRepository): Promise<string> {
     try {
-      await this.getCRUD().create(repo, this.getModel());
+      return await this.getCRUD().create(repo, this.getModel());
     } catch (e) {
       throw e;
     }

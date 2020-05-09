@@ -84,7 +84,7 @@ export default class RequirementService extends Service {
   public async findByRepoName(
     ownerId: string,
     repoName: string
-  ): Promise<IRequirement> {
+  ): Promise<IRequirement | null> {
     return (
       await this.find({
         relatedRepoOwnerId: ownerId,

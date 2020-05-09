@@ -4,6 +4,16 @@ import { Controller } from "egg";
 import { extractToken } from "../utils/Token";
 
 export default class RepositorController extends Controller {
+  public async delete() {
+    const { githubId } = extractToken(this.ctx, this.config);
+    const { id } = this.ctx.params;
+
+    await this.ctx.service.repository.delete(githubId, id);
+
+    this.ctx.body = { success: true };
+    this.ctx.status = OK;
+  }
+
   public async index() {
     const { ctx } = this;
     const { githubId } = extractToken(ctx, this.config);
