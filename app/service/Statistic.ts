@@ -29,12 +29,13 @@ export default class Statistic extends Service {
       repoId
     );
 
-    const descriptions: IRequirementDescription[] = (
-      await this.ctx.service.requirement.findByRepoName(
-        ownerId,
-        repository.name
-      )
-    ).descriptions;
+    const descriptions: IRequirementDescription[] =
+      (
+        (await this.ctx.service.requirement.findByRepoName(
+          ownerId,
+          repository.name
+        )) || {}
+      ).descriptions || [];
 
     const traceLinks: ITraceLink[] = await this.ctx.service.traceLink.getTraceLinkByRepoName(
       ownerId,
