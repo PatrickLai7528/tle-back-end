@@ -47,7 +47,7 @@ export default class TraceLinkController extends Controller {
     const { repoName } = this.ctx.query;
     const { githubId } = extractToken(this.ctx, this.config);
 
-    const matrix: ITraceLinkMatrix = await this.service.traceLink.findByRepoName(
+    const matrix: ITraceLinkMatrix | null = await this.service.traceLink.findByRepoName(
       githubId,
       repoName
     );
