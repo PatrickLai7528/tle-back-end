@@ -1,9 +1,47 @@
-import { IImportedRepository, IRecentRepo } from "./../entity/types";
-import { OK } from "http-status-codes";
 import { Controller } from "egg";
+import { OK } from "http-status-codes";
+
 import { extractToken } from "../utils/Token";
+import { IImportedRepository, IRecentRepo } from "./../entity/types";
+
+// type FinishImportBody = {
+//   repo: Omit<IImportedRepository, "_id">,
+//   requirement: Omit<IRequirement, "_id">,
+//   matrix: Omit<ITraceLinkMatrix, "_id">
+// }
 
 export default class RepositorController extends Controller {
+  // public async finishImport() {
+  //   const { githubId } = extractToken(this.ctx, this.config);
+
+  //   const { repo, requirement, matrix }: FinishImportBody = this.ctx.body;
+
+  //   await this.ctx.service.repository.create(repo);
+  //   const requirementId = await this.ctx.service.requirement.create(requirement);
+  //   const savedRequirement = await this.ctx.service.requirement.findById(requirementId);
+
+  //   if (!savedRequirement) throw new Error();
+
+  //   const nameToId = {};
+  //   for (const description of (savedRequirement.descriptions || [])) {
+  //     nameToId[description.name] = description._id;
+  //   }
+
+  //   const linksWithDescriptionId = (matrix.links || []).map(link => {
+  //     return {
+  //       ...link,
+  //       requirementDescription: {
+  //         ...link.requirementDescription,
+  //         _id: nameToId[link.requirementDescription.name],
+  //       }
+  //     }
+  //   })
+
+  //   await this.ctx.service.traceLink.create({ ...matrix, links: linksWithDescriptionId });
+  //   this.ctx.body = { success: true };
+  //   this.ctx.status = OK;
+  // }
+
   public async delete() {
     const { githubId } = extractToken(this.ctx, this.config);
     const { id } = this.ctx.params;

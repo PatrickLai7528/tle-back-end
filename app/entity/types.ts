@@ -23,7 +23,7 @@ export interface IUserActivity {
 }
 
 export interface IImplement {
-  id: string;
+  _id: string;
   type: "METHOD" | "CLASS";
   fullyQualifiedName: string;
   traced?: boolean;

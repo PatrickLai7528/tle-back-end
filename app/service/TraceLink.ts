@@ -1,4 +1,7 @@
 import { Service } from "egg";
+import { v4 as uuidv4 } from "uuid";
+
+import { ITraceLinkHistory } from "../entity/ServerOnly";
 import { flatten } from "../utils/Tree";
 import {
   IFileTreeNode,
@@ -6,9 +9,7 @@ import {
   ITraceLink,
   ITraceLinkMatrix,
 } from "./../entity/types";
-import { traceLinkMocks } from "./../mock/TraceLinks";
-import { v4 as uuidv4 } from "uuid";
-import { ITraceLinkHistory } from "../entity/ServerOnly";
+import { traceLinkMocks } from "../mock/TraceLinks";
 
 export default class TraceLinkService extends Service {
   private getCRUD() {
@@ -20,9 +21,34 @@ export default class TraceLinkService extends Service {
   }
 
   public async saveTraceLinks(
+    matrix: Omit<ITraceLinkMatrix, "_id">,
     traceLinks: Omit<ITraceLink, "_id">[]
   ): Promise<string[]> {
-    return await Promise.all(traceLinks.map(this.saveTraceLink.bind(this)));
+    const requirement: IRequirement | null = await this.ctx.service.requirement.findByRepoName(
+      matrix.relatedRepoOwnerId,
+      matrix.relatedRepoName
+    );
+
+    if (!requirement) throw new Error();
+
+    const nameToId = [];
+    for (const description of requirement.descriptions || []) {
+      nameToId[description.name] = description._id;
+    }
+
+    const traceLinksWithDescriptionId = traceLinks.map((link) => {
+      return {
+        ...link,
+        requirementDescription: {
+          ...link.requirementDescription,
+          _id: nameToId[link.requirementDescription.name],
+        },
+      };
+    });
+
+    return await Promise.all(
+      traceLinksWithDescriptionId.map(this.saveTraceLink.bind(this))
+    );
   }
 
   public async saveTraceLink(
@@ -63,7 +89,7 @@ export default class TraceLinkService extends Service {
   public async create(matrix: Omit<ITraceLinkMatrix, "_id">): Promise<string> {
     const { _id, links, ...others } = matrix as any;
 
-    const traceLinkIds: string[] = await this.saveTraceLinks(links);
+    const traceLinkIds: string[] = await this.saveTraceLinks(matrix, links);
 
     return await this.getCRUD().create(
       {
@@ -94,7 +120,9 @@ export default class TraceLinkService extends Service {
       { $push: { links: traceLinkId } }
     );
 
-    return await this.ctx.model.TraceLink.findById(traceLinkId);
+    return await this.ctx.model.TraceLink.findById(traceLinkId)
+      .populate("requirementDescription")
+      .map((item) => item.toObject());
   }
 
   public async findById(id: string): Promise<ITraceLinkMatrix | null> {
@@ -144,6 +172,17 @@ export default class TraceLinkService extends Service {
     return matrix ? matrix.links || [] : [];
   }
 
+  public async confirmCommitRelatedTraceLinks(
+    traceLinkHistory: ITraceLinkHistory
+  ): Promise<ITraceLinkHistory> {
+    const { _id, ...others } = traceLinkHistory;
+    const id = await this.ctx.service.cRUD.create(
+      { ...others, confirmed: true },
+      this.ctx.model.TraceLinkHistory
+    );
+    return { _id: id, ...others, confirmed: true };
+  }
+
   public async findHistoryByCommitAndRepoName(
     ownerId: string,
     repoName: string,
@@ -159,11 +198,21 @@ export default class TraceLinkService extends Service {
 
     if (!commit) return undefined;
 
+    const matrix: ITraceLinkMatrix | null = await this.ctx.service.traceLink.findByRepoName(
+      ownerId,
+      repoName
+    );
+
+    const tracelinks = matrix?.links || [];
+
     return {
       _id: uuidv4(),
+      repoName,
+      ownerId,
+      confirmed: false,
       commit,
-      added: { traceLinks: traceLinkMocks.slice(1, 3) },
-      removed: { traceLinks: traceLinkMocks.slice(4, 6) },
+      added: { traceLinks: [tracelinks[0]] },
+      removed: { traceLinks: [tracelinks[1]] },
     };
   }
 
@@ -230,23 +279,32 @@ export default class TraceLinkService extends Service {
     const flattenFileTrees = flatten(files).filter(
       (file) => file.type === "FILE"
     );
+
+    // mock initial trace link
+
+    const links: ITraceLink[] = [];
+    for (const description of requirement.descriptions || []) {
+      links.push(
+        ...(traceLinkMocks.slice(1, 3).map((link) => {
+          const { _id, ...others } = link;
+          return {
+            ...others,
+            implement: {
+              fullyQualifiedName:
+                flattenFileTrees[
+                  Math.round(Math.random() * (flattenFileTrees.length - 1))
+                ].fullyQualifiedName,
+            },
+            requirementDescription: description,
+          };
+        }) as any)
+      );
+    }
+
     return {
       relatedRepoOwnerId: githubId,
       relatedRepoName: "TEMP NAME",
-      links: traceLinkMocks.slice(1, 10).map((link) => {
-        const { _id, ...others } = link;
-        return {
-          ...others,
-          implement: {
-            ...link.implement,
-            fullyQualifiedName:
-              flattenFileTrees[
-                Math.round(Math.random() * (flattenFileTrees.length - 1))
-              ].fullyQualifiedName,
-          },
-          requirementDescription: requirement.descriptions[0],
-        };
-      }) as any,
+      links: links,
     };
   }
 

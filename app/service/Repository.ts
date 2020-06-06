@@ -89,7 +89,7 @@ export default class RepositoryService extends Service {
     )) as IImportedRepository[];
   }
 
-  public async create(repo: IImportedRepository): Promise<string> {
+  public async create(repo: Omit<IImportedRepository, "_id">): Promise<string> {
     try {
       return await this.getCRUD().create(repo, this.getModel());
     } catch (e) {

@@ -5,6 +5,16 @@ import { ITraceLink, ITraceLinkMatrix } from "./../entity/types";
 import { ITraceLinkHistory } from "../entity/ServerOnly";
 
 export default class TraceLinkController extends Controller {
+  public async confirmCommitRelatedTraceLink() {
+    const { changes } = this.ctx.request.body;
+    const history = await this.ctx.service.traceLink.confirmCommitRelatedTraceLinks(
+      changes
+    );
+
+    this.ctx.body = { success: true, payload: history };
+    this.ctx.status = OK;
+  }
+
   public async initRepoTraceLink() {
     const { ctx } = this;
     const requirememt = ctx.request.body.requirement;

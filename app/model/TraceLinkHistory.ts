@@ -12,10 +12,11 @@ export default (app) => {
           sha: { type: String, required: true },
         },
       ],
-      added: [{ type: Schema.Types.ObjectId, ref: "TraceLink" }],
-      removed: [{ type: Schema.Types.ObjectId, ref: "TraceLink" }],
+      added: [{ type: Schema.Types.Mixed }],
+      removed: [{ type: Schema.Types.Mixed }],
       createAt: { type: Number, default: Date.now() },
       lastUpdateAt: { type: Number, default: Date.now() },
+      confirmed: { type: Boolean, default: false },
     },
     {
       timestamps: { createdAt: "createAt", updatedAt: "lastUpdateAt" },
